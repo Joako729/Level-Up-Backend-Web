@@ -9,16 +9,15 @@ import javax.crypto.SecretKey
 
 @Service
 class JwtService {
-
-    // Generamos una clave secreta segura para firmar los tokens
+    // Clave segura para firmar
     private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
     fun generateToken(username: String, role: String): String {
         return Jwts.builder()
             .setSubject(username)
-            .claim("rol", role) // Guardamos el rol (ADMIN/CLIENTE) en el token
+            .claim("rol", role)
             .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Dura 10 horas
+            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
             .signWith(key)
             .compact()
     }

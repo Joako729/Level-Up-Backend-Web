@@ -25,7 +25,7 @@ class JwtFilter(private val jwtService: JwtService) : OncePerRequestFilter() {
                 val username = jwtService.getUsernameFromToken(token)
                 val rol = jwtService.getRoleFromToken(token)
 
-                // Convertimos el rol en un formato que Spring Security entienda (ROLE_ADMIN)
+                // IMPORTANTE: Agregamos el prefijo ROLE_ para que Spring entienda
                 val authorities = listOf(SimpleGrantedAuthority("ROLE_$rol"))
 
                 val authentication = UsernamePasswordAuthenticationToken(username, null, authorities)

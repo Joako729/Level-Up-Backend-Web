@@ -18,24 +18,22 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
-            .cors { it.configurationSource(corsConfigurationSource()) } // ¡Activa la configuración de abajo!
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
-                // Rutas Públicas (SIN LOGIN)
-                it.requestMatchers(
-                    "/api/auth/**",
-                    "/api/productos",
-                    "/api/productos/**",
-                    "/api/usuarios",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**"
-                ).permitAll()
+                // 1. SWAGGER Y AUTH (Público siempre)
+                it.requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                // Rutas de ADMIN
-                it.requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
+                // 2. PRODUCTOS: VER es Público, pero MODIFICAR es Solo Admin
+                // Es vital poner los métodos específicos antes o separar claramente
+                it.requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll() // Ver productos
+                it.requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN") // Crear
+                it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN") // Editar
+                it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN") // Borrar
 
-                // Rutas protegidas generales
+                // 3. USUARIOS (Para que puedas ver la lista en Postman/Navegador)
+                it.requestMatchers(HttpMethod.GET, "/api/usuarios").permitAll()
+
+                // 4. Cualquier otra cosa requiere estar logueado
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
@@ -46,7 +44,6 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
     @Bean
     fun corsConfigurationSource(): UrlBasedCorsConfigurationSource {
         val configuration = CorsConfiguration()
-        // CAMBIO CLAVE: Usamos allowedOriginPatterns("*") para permitir TODO
         configuration.allowedOriginPatterns = listOf("*")
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")

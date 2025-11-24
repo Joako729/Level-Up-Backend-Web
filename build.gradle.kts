@@ -1,29 +1,17 @@
-// build.gradle.kts (Versión estable y completa)
-
 plugins {
-    // Plugins de Kotlin y JPA
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     kotlin("plugin.jpa") version "1.9.25"
-
-    // Plugins de Spring Boot (Usamos la versión 3.3.1, que es estable)
     id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "com.duocuc.tienda"
 version = "0.0.1-SNAPSHOT"
-description = "Pokemon API Backend"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17) // O JavaLanguageVersion.of(21)
-    }
-}
-
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -32,29 +20,25 @@ repositories {
 }
 
 dependencies {
-    // --- DEPENDENCIAS CORE ---
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security") // PARA ROL ADMIN
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
-    // Conector de MySQL (para AWS RDS)
+    // BASE DE DATOS (MySQL)
     runtimeOnly("com.mysql:mysql-connector-j")
 
-    // --- DEPENDENCIAS DE KOTLIN ---
+    // --- JWT (ESTO ES LO QUE TE FALTA PARA QUE FUNCIONE AUTH) ---
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // -----------------------------------------------------------
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    // --- DEPENDENCIAS DE UTILIDADES Y DOCUMENTACIÓN ---
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-
-    // Spring Boot DevTools (para reinicios rápidos)
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-    // Springdoc OpenAPI (Swagger) - OBLIGATORIO para documentar
+    // Swagger (Documentación)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
-    // --- DEPENDENCIAS DE PRUEBA ---
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -66,7 +50,6 @@ kotlin {
     }
 }
 
-// Configuración de Kotlin para que JPA pueda hacer su magia
 allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")

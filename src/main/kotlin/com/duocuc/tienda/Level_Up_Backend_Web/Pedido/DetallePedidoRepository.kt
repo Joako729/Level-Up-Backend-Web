@@ -1,6 +1,5 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.repository
+package com.duocuc.tienda.Level_Up_Backend_Web.Pedido
 
-import com.duocuc.tienda.Level_Up_Backend_Web.model.DetallePedido
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

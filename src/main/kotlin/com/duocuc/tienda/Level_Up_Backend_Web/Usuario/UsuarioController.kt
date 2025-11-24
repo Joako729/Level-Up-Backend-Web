@@ -1,18 +1,13 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.controller
+package com.duocuc.tienda.Level_Up_Backend_Web.Usuario
 
-import com.duocuc.tienda.Level_Up_Backend_Web.model.Usuario
-import com.duocuc.tienda.Level_Up_Backend_Web.repository.UsuarioRepository
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/usuarios") // Esta será la URL
-@CrossOrigin(origins = ["*"])    // Permite que React u otros se conecten
+@RequestMapping("/api/usuarios")
+@CrossOrigin(origins = ["*"])
 class UsuarioController(private val usuarioRepository: UsuarioRepository) {
 
-    // Endpoint para ver todos los usuarios (GET)
+    // Endpoint para listar todos los usuarios (Solo ADMIN debería verlo, pero por ahora lo dejamos funcional)
     @GetMapping
     fun listarUsuarios(): List<Usuario> {
         return usuarioRepository.findAll()

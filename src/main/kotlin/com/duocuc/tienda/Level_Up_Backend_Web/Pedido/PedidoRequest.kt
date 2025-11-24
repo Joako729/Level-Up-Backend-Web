@@ -1,12 +1,13 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.dto
+package com.duocuc.tienda.Level_Up_Backend_Web.Pedido
 
-// Esto es lo que React nos va a enviar
 data class PedidoRequest(
     val usuarioId: Long,
-    val productos: List<ProductoPedidoRequest>
+    val total: Int,
+    val productos: List<DetalleRequest>
 )
 
-data class ProductoPedidoRequest(
+data class DetalleRequest(
     val productoId: Long,
-    val cantidad: Int
+    val cantidad: Int,
+    val precioUnitario: Int
 )

@@ -1,5 +1,7 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.model
+package com.duocuc.tienda.Level_Up_Backend_Web.Pedido
 
+// Importamos Usuario porque está en OTRA carpeta
+import com.duocuc.tienda.Level_Up_Backend_Web.Usuario.Usuario
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -10,12 +12,9 @@ data class Pedido(
     val id: Long = 0,
 
     val fecha: LocalDateTime = LocalDateTime.now(),
-
     var total: Int = 0,
-
     var estado: String = "CONFIRMADO",
 
-    // Relación: Un pedido pertenece a un Usuario
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     val usuario: Usuario? = null

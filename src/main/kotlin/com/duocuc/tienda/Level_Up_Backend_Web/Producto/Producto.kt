@@ -1,4 +1,4 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.model
+package com.duocuc.tienda.Level_Up_Backend_Web.Producto // <--- AHORA COINCIDE CON LA CARPETA
 
 import jakarta.persistence.*
 

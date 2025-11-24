@@ -1,4 +1,4 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.model
+package com.duocuc.tienda.Level_Up_Backend_Web.Usuario
 
 import jakarta.persistence.*
 
@@ -10,8 +10,11 @@ data class Usuario(
 
     var nombre: String = "",
 
-    @Column(unique = true) // El email no se puede repetir
+    @Column(unique = true)
     var email: String = "",
 
-    var password: String = "" // Nota: En producción real esto se debe encriptar
+    var password: String = "",
+
+    // --- ESTO ES LO QUE FALTABA Y ROMPÍA TODO ---
+    var rol: String = "CLIENTE"
 )

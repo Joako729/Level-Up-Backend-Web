@@ -20,20 +20,22 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
-                // 1. SWAGGER Y AUTH (Público siempre)
-                it.requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                // 1. PÚBLICO
+                it.requestMatchers("/api/auth/**", "/api/productos", "/api/productos/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                // 2. PRODUCTOS: VER es Público, pero MODIFICAR es Solo Admin
-                // Es vital poner los métodos específicos antes o separar claramente
-                it.requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll() // Ver productos
-                it.requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN") // Crear
-                it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN") // Editar
-                it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN") // Borrar
+                // 2. PRODUCTOS (Solo Admin modifica)
+                it.requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
+                it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
 
-                // 3. USUARIOS (Para que puedas ver la lista en Postman/Navegador)
-                it.requestMatchers(HttpMethod.GET, "/api/usuarios").permitAll()
+                // 3. PEDIDOS (Admin ve todo, Cliente ve lo suyo)
+                it.requestMatchers(HttpMethod.GET, "/api/pedidos").hasRole("ADMIN")
+                it.requestMatchers("/api/pedidos/mis-pedidos").authenticated()
 
-                // 4. Cualquier otra cosa requiere estar logueado
+                // 4. USUARIOS (Solo Admin)
+                it.requestMatchers("/api/usuarios").hasRole("ADMIN")
+
+                // Resto requiere login
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
@@ -48,7 +50,6 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
-
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source

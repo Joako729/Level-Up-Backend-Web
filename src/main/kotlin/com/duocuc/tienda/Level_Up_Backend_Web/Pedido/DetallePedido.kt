@@ -1,5 +1,6 @@
-package com.duocuc.tienda.Level_Up_Backend_Web.Pedido // <--- PAQUETE PEDIDO
+package com.duocuc.tienda.Level_Up_Backend_Web.Pedido
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 
 @Entity
@@ -10,6 +11,7 @@ data class DetallePedido(
 
     @ManyToOne
     @JoinColumn(name = "pedido_id")
+    @JsonBackReference // <--- ESTO EVITA EL ERROR Y EL BUCLE
     val pedido: Pedido? = null,
 
     val productoId: Long = 0,

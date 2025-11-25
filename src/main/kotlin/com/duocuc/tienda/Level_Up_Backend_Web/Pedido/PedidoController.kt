@@ -10,27 +10,22 @@ import org.springframework.web.bind.annotation.*
 class PedidoController(
     private val pedidoService: PedidoService,
     private val pedidoRepository: PedidoRepository,
-    private val usuarioRepository: UsuarioRepository // Inyectamos esto para buscar el ID
+    private val usuarioRepository: UsuarioRepository
 ) {
 
-    // ADMIN: Ve TODO
     @GetMapping
     fun listar(): List<Pedido> {
         return pedidoService.listarPedidos()
     }
 
-    // CLIENTE: Ve SOLO SUYOS (Buscando por ID)
     @GetMapping("/mis-pedidos")
     fun misPedidos(): List<Pedido> {
-        // 1. Sacamos el email del token
         val email = SecurityContextHolder.getContext().authentication.name
-
-        // 2. Buscamos al usuario real en la BD para obtener su ID
         val usuario = usuarioRepository.findByEmail(email)
 
-        // 3. Si existe, buscamos sus pedidos por ID
         return if (usuario != null) {
-            pedidoRepository.findByUsuarioId(usuario.id)
+            // Usamos la función corregida
+            pedidoRepository.findByUsuario_Id(usuario.id)
         } else {
             emptyList()
         }

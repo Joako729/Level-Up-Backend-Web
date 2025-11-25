@@ -20,22 +20,20 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
-                // 1. PÚBLICO
+                // 1. Público
                 it.requestMatchers("/api/auth/**", "/api/productos", "/api/productos/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                // 2. PRODUCTOS (Solo Admin modifica)
+                // 2. REGLA CLAVE: Mis pedidos va ANTES que la regla general de admin
+                it.requestMatchers("/api/pedidos/mis-pedidos").authenticated()
+
+                // 3. Admin
                 it.requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN")
                 it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
                 it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
-
-                // 3. PEDIDOS (Admin ve todo, Cliente ve lo suyo)
-                it.requestMatchers(HttpMethod.GET, "/api/pedidos").hasRole("ADMIN")
-                it.requestMatchers("/api/pedidos/mis-pedidos").authenticated()
-
-                // 4. USUARIOS (Solo Admin)
+                it.requestMatchers(HttpMethod.GET, "/api/pedidos").hasRole("ADMIN") // Ver todos
                 it.requestMatchers("/api/usuarios").hasRole("ADMIN")
 
-                // Resto requiere login
+                // 4. Resto
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)

@@ -5,9 +5,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PedidoRepository : JpaRepository<Pedido, Long> {
-    // Búsqueda exacta por ID de usuario (Más seguro que el email)
-    fun findByUsuarioId(id: Long): List<Pedido>
-
-    // Mantenemos esta por si acaso, pero usaremos la de arriba
+    // Corregido: findByUsuario_Id
+    fun findByUsuario_Id(id: Long): List<Pedido>
     fun findByUsuarioEmail(email: String): List<Pedido>
 }

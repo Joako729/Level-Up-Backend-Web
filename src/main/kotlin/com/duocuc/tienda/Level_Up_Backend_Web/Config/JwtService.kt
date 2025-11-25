@@ -9,8 +9,10 @@ import javax.crypto.SecretKey
 
 @Service
 class JwtService {
-    // Clave segura para firmar
-    private val key: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+
+    // CLAVE FIJA: Así no caduca tu sesión al reiniciar
+    private val SECRET_KEY_STRING = "esta_es_una_clave_muy_secreta_y_segura_1234567890_1234567890"
+    private val key: SecretKey = Keys.hmacShaKeyFor(SECRET_KEY_STRING.toByteArray())
 
     fun generateToken(username: String, role: String): String {
         return Jwts.builder()
@@ -18,7 +20,7 @@ class JwtService {
             .claim("rol", role)
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-            .signWith(key)
+            .signWith(key, SignatureAlgorithm.HS256)
             .compact()
     }
 

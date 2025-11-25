@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PedidoRepository : JpaRepository<Pedido, Long> {
-    // Corregido: findByUsuario_Id
-    fun findByUsuario_Id(id: Long): List<Pedido>
-    fun findByUsuarioEmail(email: String): List<Pedido>
+
+    // ESTA ES LA LÍNEA QUE TE FALTA Y CAUSA EL ERROR:
+    fun findByUsuarioId(id: Long): List<Pedido>
 }

@@ -7,9 +7,14 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin(origins = ["*"])
 class UsuarioController(private val usuarioRepository: UsuarioRepository) {
 
-    // Endpoint para listar todos los usuarios (Solo ADMIN debería verlo, pero por ahora lo dejamos funcional)
     @GetMapping
     fun listarUsuarios(): List<Usuario> {
         return usuarioRepository.findAll()
+    }
+
+    // --- NUEVO: ENDPOINT PARA BORRAR USUARIO ---
+    @DeleteMapping("/{id}")
+    fun eliminarUsuario(@PathVariable id: Long) {
+        usuarioRepository.deleteById(id)
     }
 }

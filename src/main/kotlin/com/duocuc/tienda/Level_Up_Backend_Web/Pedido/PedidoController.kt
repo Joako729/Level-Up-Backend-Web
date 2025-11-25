@@ -13,19 +13,21 @@ class PedidoController(
     private val usuarioRepository: UsuarioRepository
 ) {
 
+    // ADMIN: Ve TODO
     @GetMapping
     fun listar(): List<Pedido> {
         return pedidoService.listarPedidos()
     }
 
+    // CLIENTE: Ve SOLO SUYOS
     @GetMapping("/mis-pedidos")
     fun misPedidos(): List<Pedido> {
         val email = SecurityContextHolder.getContext().authentication.name
         val usuario = usuarioRepository.findByEmail(email)
 
+        // Aquí ya no dará error porque actualizaste PedidoRepository
         return if (usuario != null) {
-            // Usamos la función corregida
-            pedidoRepository.findByUsuario_Id(usuario.id)
+            pedidoRepository.findByUsuarioId(usuario.id)
         } else {
             emptyList()
         }
@@ -38,6 +40,21 @@ class PedidoController(
             ResponseEntity.ok(pedido)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body("Error: ${e.message}")
+        }
+    }
+
+    // BORRAR PEDIDO (Solo Admin)
+    @DeleteMapping("/{id}")
+    fun eliminarPedido(@PathVariable id: Long): ResponseEntity<Any> {
+        return try {
+            if (pedidoRepository.existsById(id)) {
+                pedidoRepository.deleteById(id)
+                ResponseEntity.ok().body(mapOf("message" to "Pedido eliminado"))
+            } else {
+                ResponseEntity.status(404).body("Pedido no encontrado")
+            }
+        } catch (e: Exception) {
+            ResponseEntity.status(500).body("Error al eliminar: ${e.message}")
         }
     }
 }

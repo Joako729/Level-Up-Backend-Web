@@ -10,11 +10,19 @@ data class Usuario(
 
     var nombre: String = "",
 
+    // --- AGREGAR ESTOS CAMPOS NUEVOS ---
+    var username: String = "",
+
+    var edad: Int = 0,
+
+    var region: String = "",
+
+    var comuna: String = "",
+
     @Column(unique = true)
     var email: String = "",
 
     var password: String = "",
 
-    // --- ESTO ES LO QUE FALTABA Y ROMPÍA TODO ---
     var rol: String = "CLIENTE"
 )

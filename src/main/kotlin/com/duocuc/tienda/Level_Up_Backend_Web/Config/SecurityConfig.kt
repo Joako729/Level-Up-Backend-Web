@@ -20,24 +20,27 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
-                // 1. Público
+                // 1. PÚBLICO (Incluye ver reseñas)
+                it.requestMatchers(HttpMethod.GET, "/api/resenias/**").permitAll() // <--- NUEVO
                 it.requestMatchers("/api/auth/**", "/api/productos", "/api/productos/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                // 2. Mis pedidos (Cualquier usuario logueado)
+                // 2. MIS PEDIDOS
                 it.requestMatchers("/api/pedidos/mis-pedidos").authenticated()
 
-                // 3. GESTIÓN DE PRODUCTOS: ADMIN y VENDEDOR
-                // Aquí permitimos que ambos roles puedan Crear, Editar y Borrar productos
+                // 3. CREAR RESEÑA (Cualquier usuario logueado)
+                it.requestMatchers(HttpMethod.POST, "/api/resenias").authenticated() // <--- NUEVO
+
+                // 4. GESTIÓN PRODUCTOS (Admin y Vendedor)
                 it.requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole("ADMIN", "VENDEDOR")
                 it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ADMIN", "VENDEDOR")
                 it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ADMIN", "VENDEDOR")
 
-                // 4. Solo ADMIN (Gestión de usuarios y ver todos los pedidos)
+                // 5. SOLO ADMIN
                 it.requestMatchers(HttpMethod.GET, "/api/pedidos").hasRole("ADMIN")
                 it.requestMatchers("/api/usuarios").hasRole("ADMIN")
                 it.requestMatchers("/api/usuarios/**").hasRole("ADMIN")
 
-                // 5. Resto requiere autenticación
+                // 6. RESTO
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)

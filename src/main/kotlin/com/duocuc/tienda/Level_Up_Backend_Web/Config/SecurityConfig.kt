@@ -23,17 +23,21 @@ class SecurityConfig(private val jwtFilter: JwtFilter) {
                 // 1. Público
                 it.requestMatchers("/api/auth/**", "/api/productos", "/api/productos/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                // 2. REGLA CLAVE: Mis pedidos va ANTES que la regla general de admin
+                // 2. Mis pedidos (Cualquier usuario logueado)
                 it.requestMatchers("/api/pedidos/mis-pedidos").authenticated()
 
-                // 3. Admin
-                it.requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.GET, "/api/pedidos").hasRole("ADMIN") // Ver todos
-                it.requestMatchers("/api/usuarios").hasRole("ADMIN")
+                // 3. GESTIÓN DE PRODUCTOS: ADMIN y VENDEDOR
+                // Aquí permitimos que ambos roles puedan Crear, Editar y Borrar productos
+                it.requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole("ADMIN", "VENDEDOR")
+                it.requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ADMIN", "VENDEDOR")
+                it.requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ADMIN", "VENDEDOR")
 
-                // 4. Resto
+                // 4. Solo ADMIN (Gestión de usuarios y ver todos los pedidos)
+                it.requestMatchers(HttpMethod.GET, "/api/pedidos").hasRole("ADMIN")
+                it.requestMatchers("/api/usuarios").hasRole("ADMIN")
+                it.requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+
+                // 5. Resto requiere autenticación
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
